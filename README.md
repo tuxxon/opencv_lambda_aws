@@ -1,3 +1,6 @@
+# Original Source 
+This repo has been taken from https://github.com/iandow/opencv_aws_lambda and some parts are changed.
+
 # AWS Lambda function for OpenCV
 
 This project illustrates how to create an AWS Lambda function using Python 3.7 and OpenCV (latest) to grayscale an image in S3 and save it back to S3. The Python OpenCV library can be published together with the application code as an all-in-one Lambda function, or as a Lambda layer which reduces the size of the Lambda function and enables the function code to be rendered in the Lambda code viewer in the AWS console. Both deploy options are described in USAGE. The respective sizes of these deployments are shown below:
