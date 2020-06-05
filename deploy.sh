@@ -1,5 +1,6 @@
 #!/bin/bash
 # Create the Lambda function:
+./compress.sh
 ROLE_NAME=lambda-opencv_study
 ZIPFILE=allinone.zip
 FUNCTION_NAME=opencv_allinone
