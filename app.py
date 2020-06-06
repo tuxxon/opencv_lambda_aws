@@ -61,7 +61,7 @@ def lambda_handler(event, context):
     image_stylization = cv2.stylization(image_src, sigma_s=60, sigma_r=0.45)
     cv2.imwrite(down_filename_style, image_stylization)
 
-    image_ps_gray, image_ps_color = cv2.pencilSketch(image_src, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
+    image_ps_gray, image_ps_color = cv2.pencilSketch(image_src, sigma_s=60, sigma_r=0.07, shade_factor=0.05)
     cv2.imwrite(down_filename_ps_gray, image_ps_gray)
     cv2.imwrite(down_filename_ps_color, image_ps_color)
 
