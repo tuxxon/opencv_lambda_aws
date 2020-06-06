@@ -10,7 +10,7 @@ import os
 
 def lambda_handler(event, context):
 
-    #print("==== event ===> {}".format(event))
+    print("==== event ===> {}".format(event))
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -28,7 +28,7 @@ def lambda_handler(event, context):
     down_filename_style='/tmp/my_image_style{}'.format(ext)
     down_filename_ps_gray='/tmp/my_image_ps_gray{}'.format(ext)
     down_filename_ps_color='/tmp/my_image_ps_color{}'.format(ext)
-    
+
     gray_filename='public/{}-gray{}'.format(basename,ext)
     ep_filename='public/{}-ep{}'.format(basename,ext)
     de_filename='public/{}-de{}'.format(basename,ext)
@@ -58,7 +58,7 @@ def lambda_handler(event, context):
     image_de  = cv2.detailEnhance(image_src, sigma_s=10, sigma_r=0.15)
     cv2.imwrite(down_filename_de, image_de)
 
-    image_stylization = cv2.stylization(src, sigma_s=60, sigma_r=0.45)
+    image_stylization = cv2.stylization(image_src, sigma_s=60, sigma_r=0.45)
     cv2.imwrite(down_filename_style, image_stylization)
 
     image_ps_gray, image_ps_color = cv2.pencilSketch(image_src, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
