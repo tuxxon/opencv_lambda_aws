@@ -2,10 +2,18 @@
 import boto3
 import botocore
 import cv2
+import hashlib
 import json
 import logging
 import numpy
 import os
+
+
+def hash_image(img):
+
+    h = hashlib.sha256(img).hexdigest()
+
+    return h
 
 
 def lambda_handler(event, context):
@@ -65,6 +73,11 @@ def lambda_handler(event, context):
     cv2.imwrite(down_filename_ps_gray, image_ps_gray)
     cv2.imwrite(down_filename_ps_color, image_ps_color)
 
+    image_bytes = cv2.imencode(ext, image_src)[1]
+    hash_str = hash_image(image_bytes)
+
+    print("[DEBUG] hash = {}".format(hash_str))
+
     s3 = boto3.client('s3')
     s3.upload_file(down_filename_gray, BUCKET_NAME, gray_filename)
     s3.upload_file(down_filename_ep, BUCKET_NAME, ep_filename)
@@ -72,6 +85,7 @@ def lambda_handler(event, context):
     s3.upload_file(down_filename_style, BUCKET_NAME, style_filename)
     s3.upload_file(down_filename_ps_gray, BUCKET_NAME, ps_gray_filename)
     s3.upload_file(down_filename_ps_color, BUCKET_NAME, ps_color_filename)
+
 
     images = {
         "gray" : "https://{bucketName}.s3.ap-northeast-2.amazonaws.com/{grayName}".format(
@@ -103,6 +117,7 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": {
+            "hash" : hash_str,
             "images": images
         },
     }
