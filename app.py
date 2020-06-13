@@ -120,8 +120,6 @@ def lambda_handler(event, context):
     ps_gray_filename='public/{}/ps-gray{}'.format(hash_str,ext)
     ps_color_filename='public/{}/ps-color{}'.format(hash_str,ext)
 
-    print("[DEBUG] hash = {}".format(hash_str))
-
     try:
 
         response =s3.list_objects_v2(
