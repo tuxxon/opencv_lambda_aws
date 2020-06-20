@@ -32,15 +32,15 @@ def listImages(reponse):
         if '/gray.' in obj['Key']:
             result['gray'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/ep.' in obj['Key']:
-            result['edgePreserving'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+            result['ep'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/de.' in obj['Key']:
-            result['detailEnhance'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+            result['de'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/style.' in obj['Key']:
-            result['stylization'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+            result['style'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/ps-color.' in obj['Key']:
-            result['pencilSketch_gray'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+            result['ps-color'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/ps-gray.' in obj['Key']:
-            result['pencilSketch_color'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+            result['ps-gray'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/source.' in obj['Key']:
             result['source'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
 
@@ -181,11 +181,11 @@ def lambda_handler(event, context):
     images = {
         "source" : S3_URL.format(bucketName = BUCKET_NAME, keyName = source_filename),
         "gray" : S3_URL.format(bucketName = BUCKET_NAME, keyName = gray_filename),
-        "edgePreserving" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ep_filename),
-        "detailEnhance" : S3_URL.format(bucketName = BUCKET_NAME, keyName = de_filename),
-        "stylization" : S3_URL.format(bucketName = BUCKET_NAME, keyName = style_filename),
-        "pencilSketch_gray" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_gray_filename),
-        "pencilSketch_color" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_color_filename)
+        "ep" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ep_filename),
+        "de" : S3_URL.format(bucketName = BUCKET_NAME, keyName = de_filename),
+        "style" : S3_URL.format(bucketName = BUCKET_NAME, keyName = style_filename),
+        "ps-gray" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_gray_filename),
+        "ps-color" : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_color_filename)
     }
 
     s3.delete_object(Bucket=BUCKET_NAME, Key=S3_KEY)
