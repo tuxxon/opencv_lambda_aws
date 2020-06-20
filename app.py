@@ -26,6 +26,9 @@ def listImages(reponse):
 
     result = {}
     for obj in reponse.get('Contents', []):
+        if '.json' in obj['Key']:
+            continue
+
         if '/gray.' in obj['Key']:
             result['gray'] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/ep.' in obj['Key']:
