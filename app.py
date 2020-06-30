@@ -40,10 +40,13 @@ def hash_image2(img_path):
     return h
 
 
-def invoke_lambdas(img_src):
+def invoke_lambdas(img_src, h):
 
     client = boto3.client('lambda')
-    payload = {"name" : img_src}
+    payload = {
+        "name" : img_src,
+        "hash" : h
+    }
 
     resp1 = client.invoke(
         FunctionName = "imageio_sketchify",
@@ -196,7 +199,7 @@ def lambda_handler(event, context):
     #
     # Invoke the other lambda functions for image conversion.
     #
-    invoke_lambdas(source_filename)
+    invoke_lambdas(source_filename, hash_str)
 
     #
     # Basic image conversions.
