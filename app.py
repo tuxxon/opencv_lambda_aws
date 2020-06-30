@@ -241,7 +241,7 @@ def lambda_handler(event, context):
         kPS_COLOR : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_color_filename)
     }
 
-    #s3.delete_object(Bucket=BUCKET_NAME, Key=S3_KEY)
+    s3.delete_object(Bucket=BUCKET_NAME, Key=S3_KEY)
     return {
         "statusCode": 200,
         "body": {
