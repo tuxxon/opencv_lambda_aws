@@ -15,6 +15,7 @@ kGRAY = 'gray'
 kEP = "ep"
 kDE = "de"
 kSTYLE = "style"
+kSKETCHIFY = "sketchify"
 kPS_COLOR = "ps-color"
 kPS_GRAY = "ps-gray"
 kSOURCE = "source"
@@ -38,6 +39,21 @@ def hash_image2(img_path):
 
     return h
 
+
+def invoke_lambdas(img_src):
+
+    client = boto3.client('lambda')
+    payload = {"name" : img_src}
+
+    resp1 = client.invoke(
+        FunctionName = "imageio_sketchify",
+        InvocationType = "Event",
+        Payload = json.dumps(payload)
+    )
+
+    print("[DEBUG] resp1 = {}".format(resp1) )
+
+    return resp1
 
 #
 # ''' list images from a bucket of s3  '''
@@ -63,6 +79,8 @@ def listImages(reponse):
             result[kPS_GRAY] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/source.' in obj['Key']:
             result[kSOURCE] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+        elif '/sketchify.' in obj['Key']:
+            result[kSKETCHIFY] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
 
     return result
 
@@ -132,8 +150,8 @@ def lambda_handler(event, context):
     #
     # Extract a hash value from an image.
     #
-    # image_bytes = cv2.imencode(ext, image_src)[1]
-    hash_str = hash_image2(down_filename)
+    image_bytes = cv2.imencode(ext, image_src)[1]
+    hash_str = hash_image(image_bytes)
 
     source_filename='public/{}/source{}'.format(hash_str,ext)
     gray_filename='public/{}/gray{}'.format(hash_str,ext)
@@ -170,6 +188,19 @@ def lambda_handler(event, context):
 
     print("[DEBUG] no image = {}".format(hash_str))
 
+    #
+    # Save source image to S3
+    #
+    s3.upload_file(down_filename, BUCKET_NAME, source_filename)
+
+    #
+    # Invoke the other lambda functions for image conversion.
+    #
+    invoke_lambdas(source_filename)
+
+    #
+    # Basic image conversions.
+    #
     image_gray = cv2.cvtColor(image_src, cv2.COLOR_BGR2GRAY)
     cv2.imwrite(down_filename_gray, image_gray)
 
@@ -189,7 +220,6 @@ def lambda_handler(event, context):
     #
     # s3 = boto3.client('s3')
     #
-    s3.upload_file(down_filename, BUCKET_NAME, source_filename)
     s3.upload_file(down_filename_gray, BUCKET_NAME, gray_filename)
     s3.upload_file(down_filename_ep, BUCKET_NAME, ep_filename)
     s3.upload_file(down_filename_de, BUCKET_NAME, de_filename)
