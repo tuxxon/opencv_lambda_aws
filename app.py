@@ -28,6 +28,17 @@ def hash_image(img):
 
     return h
 
+
+def hash_image2(img_path):
+
+    f = open(img_path,'rb')
+    d = f.read()
+    f.close()
+    h = hashlib.sha256(d).hexdigest()
+
+    return h
+
+
 #
 # ''' list images from a bucket of s3  '''
 #
@@ -121,8 +132,8 @@ def lambda_handler(event, context):
     #
     # Extract a hash value from an image.
     #
-    image_bytes = cv2.imencode(ext, image_src)[1]
-    hash_str = hash_image(image_bytes)
+    # image_bytes = cv2.imencode(ext, image_src)[1]
+    hash_str = hash_image2(down_filename)
 
     source_filename='public/{}/source{}'.format(hash_str,ext)
     gray_filename='public/{}/gray{}'.format(hash_str,ext)
