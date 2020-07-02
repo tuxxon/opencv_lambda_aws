@@ -19,7 +19,7 @@ kSKETCHIFY = "sketchify"
 kPS_COLOR = "ps-color"
 kPS_GRAY = "ps-gray"
 kSOURCE = "source"
-
+kNORMALCARTOON = "normal-cartoon"
 #
 # ''' get the hash value for an image '''
 #
@@ -54,7 +54,13 @@ def invoke_lambdas(img_src, h):
         Payload = json.dumps(payload)
     )
 
-    print("[DEBUG] resp1 = {}".format(resp1) )
+    resp2 = client.invoke(
+        FunctionName = "opencv_normal_cartoon",
+        InvocationType = "Event",
+        Payload = json.dumps(payload)
+    )
+
+    print("[DEBUG] resp2 = {}".format(resp2) )
 
     return resp1
 
@@ -84,6 +90,8 @@ def listImages(reponse):
             result[kSOURCE] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/sketchify.' in obj['Key']:
             result[kSKETCHIFY] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+        elif '/normal-cartoon.' in obj['Key']:
+            result[kNORMALCARTOON] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
 
     return result
 
@@ -221,7 +229,7 @@ def lambda_handler(event, context):
     cv2.imwrite(down_filename_ps_color, image_ps_color)
 
     #
-    # s3 = boto3.client('s3')
+    # Upload local files to S3.
     #
     s3.upload_file(down_filename_gray, BUCKET_NAME, gray_filename)
     s3.upload_file(down_filename_ep, BUCKET_NAME, ep_filename)
@@ -241,6 +249,9 @@ def lambda_handler(event, context):
         kPS_COLOR : S3_URL.format(bucketName = BUCKET_NAME, keyName = ps_color_filename)
     }
 
+    #
+    # Remove the first source image file.
+    #
     s3.delete_object(Bucket=BUCKET_NAME, Key=S3_KEY)
     return {
         "statusCode": 200,
@@ -249,4 +260,3 @@ def lambda_handler(event, context):
             "images": images
         },
     }
-
