@@ -20,6 +20,8 @@ kPS_COLOR = "ps-color"
 kPS_GRAY = "ps-gray"
 kSOURCE = "source"
 kNORMALCARTOON = "normal-cartoon"
+kCARTOONLITE = "cartoon-lite"
+kCARTOONBASIC = "cartoon-basic"
 #
 # ''' get the hash value for an image '''
 #
@@ -60,9 +62,21 @@ def invoke_lambdas(img_src, h):
         Payload = json.dumps(payload)
     )
 
-    print("[DEBUG] resp2 = {}".format(resp2) )
+    resp3 = client.invoke(
+        FunctionName = "opencv_cartoon_lite",
+        InvocationType = "Event",
+        Payload = json.dumps(payload)
+    )
 
-    return resp1
+    resp4 = client.invoke(
+        FunctionName = "opencv_cartoon_basic",
+        InvocationType = "Event",
+        Payload = json.dumps(payload)
+    )
+
+    print("[DEBUG] resp4 = {}".format(resp4) )
+
+    return resp4
 
 #
 # ''' list images from a bucket of s3  '''
@@ -92,6 +106,10 @@ def listImages(reponse):
             result[kSKETCHIFY] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
         elif '/normal-cartoon.' in obj['Key']:
             result[kNORMALCARTOON] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+        elif '/cartoon-lite.' in obj['Key']:
+            result[kCARTOONLITE] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
+        elif '/cartoon-basic.' in obj['Key']:
+            result[kCARTOONBASIC] = S3_URL.format(bucketName = 'cartoonaf', keyName = obj['Key'])
 
     return result
 
