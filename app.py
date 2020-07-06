@@ -78,8 +78,33 @@ def invoke_lambdas(img_src, h):
 
     return resp4
 
+
+def read_and_resize(img_path):
+
+    img = cv2.imread(img_path, cv2.IMREAD_LOAD_GDAL | cv2.IMREAD_COLOR)    
+    scale_percent_w = 1920 / img.shape[1]  # percent of original size
+    scale_percent_h = 1080 / img.shape[0]
+    scale_percent = scale_percent_w if scale_percent_w < scale_percent_h else scale_percent_h
+    print("[DEBUG] read_and_resize > w = {w}, h = {h}".format(
+        w = scale_percent_w * 100, 
+        h = scale_percent_h * 100
+    ))
+
+    if scale_percent_w >= 1 and scale_percent_h >= 1:
+        return img
+
+    width = int(img.shape[1] * scale_percent)
+    height = int(img.shape[0] * scale_percent)
+    dim = (width, height)
+
+    # resize image
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    cv2.imwrite(img_path, resized)
+
+    return resized
+
 #
-# ''' list images from a bucket of s3  '''
+# ''' list images from a bucket of s3  ''' 
 #
 def listImages(reponse):
 
@@ -174,7 +199,8 @@ def lambda_handler(event, context):
     #
     # Load an image from file system.
     #
-    image_src = cv2.imread(down_filename)
+    # image_src = cv2.imread(down_filename)
+    image_src = read_and_resize(down_filename)
 
     #
     # Extract a hash value from an image.
